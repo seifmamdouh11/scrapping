@@ -1,0 +1,10 @@
+playwright
+pandas
+openpyxl
+beautifulsoup4
+requests
+fastapi
+uvicorn[standard]
+sqlalchemy
+apscheduler
+python-multipart

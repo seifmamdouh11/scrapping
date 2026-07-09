@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.db
+*.csv
+jobs_output.json
+technology_and_it_jobs.json
+web/node_modules/
+web/dist/
+web/.env.local
+.DS_Store
+.env
