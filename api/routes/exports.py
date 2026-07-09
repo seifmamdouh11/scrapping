@@ -6,7 +6,7 @@ from typing import Optional
 
 import pandas as pd
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -82,9 +82,13 @@ def export_csv(
         db, q, source, category, company, location, scrape_run_id
     ).all()
     csv_content = Exporter.to_csv(_jobs_to_dicts(jobs))
-    return StreamingResponse(
-        io.StringIO(csv_content),
-        media_type="text/csv",
+    
+    # Prepend BOM so Excel reads utf-8 correctly
+    content_with_bom = "\ufeff" + csv_content
+    
+    return Response(
+        content=content_with_bom.encode("utf-8"),
+        media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=jobs_export.csv"},
     )
 
@@ -104,9 +108,9 @@ def export_json(
     ).all()
     data = _jobs_to_dicts(jobs)
     content = json.dumps(data, ensure_ascii=False, indent=2)
-    return StreamingResponse(
-        io.StringIO(content),
-        media_type="application/json",
+    return Response(
+        content=content.encode("utf-8"),
+        media_type="application/json; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=jobs_export.json"},
     )
 
